@@ -28,14 +28,14 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from tqdm import tqdm
 
 # Verify these against https://huggingface.co/collections/llm-jp/optimal-sparsity-math
-# before relying on them - naming may differ for some family members.
 CANDIDATES = [
     "llm-jp/optimal-sparsity-math-d512-E8-k2-320M-A170M",
-    "llm-jp/optimal-sparsity-math-d512-E16-k2",
-    "llm-jp/optimal-sparsity-math-d512-E32-k2",
-    "llm-jp/optimal-sparsity-math-d512-E64-k2",
+    "llm-jp/optimal-sparsity-math-d512-E16-k2-520M-A170M",
+    "llm-jp/optimal-sparsity-math-d512-E32-k2-920M-A170M",
+    "llm-jp/optimal-sparsity-math-d512-E64-k2-1.7B-A170M",
+    "llm-jp/optimal-sparsity-math-d512-E128-k2-3.3B-A170M",
+    "llm-jp/optimal-sparsity-math-d512-E256-k2-6.6B-A170M",
 ]
-
 
 def load(model_id, device="cuda"):
     tok = AutoTokenizer.from_pretrained(model_id)

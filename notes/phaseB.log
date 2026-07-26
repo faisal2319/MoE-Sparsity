@@ -1,0 +1,21 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Traceback (most recent call last):
+  File "/workspace/MoE-Sparsity/code/step02_checkpoint_analysis.py", line 235, in <module>
+    main()
+  File "/workspace/MoE-Sparsity/code/step02_checkpoint_analysis.py", line 202, in main
+    probes = probe_sets(a.n_probe)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/MoE-Sparsity/code/step02_checkpoint_analysis.py", line 174, in probe_sets
+    code_ds = load_dataset("bigcode/the-stack-smol", "data/python", split="train", streaming=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/MoE-Sparsity/venv/lib/python3.12/site-packages/datasets/load.py", line 1698, in load_dataset
+    builder_instance = load_dataset_builder(
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/MoE-Sparsity/venv/lib/python3.12/site-packages/datasets/load.py", line 1325, in load_dataset_builder
+    dataset_module = dataset_module_factory(
+                     ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/MoE-Sparsity/venv/lib/python3.12/site-packages/datasets/load.py", line 1211, in dataset_module_factory
+    raise e1 from None
+  File "/workspace/MoE-Sparsity/venv/lib/python3.12/site-packages/datasets/load.py", line 1199, in dataset_module_factory
+    raise DatasetNotFoundError(message) from e
+datasets.exceptions.DatasetNotFoundError: Dataset 'bigcode/the-stack-smol' is a gated dataset on the Hub. You must be authenticated to access it.
