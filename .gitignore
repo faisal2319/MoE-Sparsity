@@ -1,0 +1,24 @@
+# ---- Large artifacts: regenerable, never commit ----
+data/
+runs/
+artifacts/
+*.npy
+*.bin
+*.safetensors
+*.parquet
+wandb/
+
+# ---- Phase outputs: TRACK the findings, ignore the bulk ----
+out/**/*_sample.json          # 200 raw docs per corpus, only for manual inspection
+out/**/checkpoints/
+!out/**/results.json          # ← the actual findings
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# ---- OS ----
+.DS_Store
