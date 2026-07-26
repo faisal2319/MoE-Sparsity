@@ -8,7 +8,7 @@
   hf cache       : 8.2M
   torch          : 2.13.0+cu126  cuda=True
   gpu            : NVIDIA GeForce RTX 4090
-  uncommitted    : 3 files
+  uncommitted    : 1 files
 
 ==================================================================
   PHASE A - data characterization
