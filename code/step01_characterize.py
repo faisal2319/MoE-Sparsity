@@ -24,9 +24,15 @@ MEMORY NOTE: 50k docs is plenty for distributional statistics. 200k pushed a
 16GB MacBook into swap because of the n-gram counting, which is now bounded by
 --ngram-docs regardless of --n-docs.
 """
-import argparse, json, os, re, random
+import argparse, json, os, re, random, sys
 from collections import Counter
 from pathlib import Path
+
+# Python randomises str hashing per process, so distinct_4gram_ratio would not
+# be reproducible across runs. Re-exec once with a fixed seed.
+if os.environ.get("PYTHONHASHSEED") != "0":
+    os.environ["PYTHONHASHSEED"] = "0"
+    os.execv(sys.executable, [sys.executable] + sys.argv)
 
 import numpy as np
 from datasets import load_dataset
@@ -71,20 +77,26 @@ def stream_docs(repo, config, n, seed=0):
     return out
 
 
-def exact_doc_count(repo, config):
+def exact_doc_count(repo, config, allow_stream=True):
     """
-    PHASE 0.2 GATE.
+    GATE A.
 
     If SwallowMath has materially fewer documents than FineMath-4+, then the
     contrast confounds *rewriting* with *filtering*, and the one-variable claim
     in the LOI does not hold. Resolve this before writing any other code.
 
-    Three fallbacks, cheapest first. None of them download the corpus.
+    Four fallbacks, cheapest first.
 
-      1. HF datasets-server /size endpoint - reads parquet footers server-side.
+      1. HF datasets-server /size - reads parquet footers server-side.
+         *** MUST check the `partial` flag. *** The server caps auto-conversion
+         at 5GB, so for larger datasets it reports the row count of a TRUNCATED
+         conversion. SwallowMath is 12.8GB, and trusting this returned
+         2,628,785 instead of the true count - the bug that broke Gate A on the
+         first run.
       2. load_dataset_builder split metadata - works for FineMath (parquet),
          returns UNKNOWN for SwallowMath (JSON-backed, no precomputed splits).
-      3. Direct parquet footer read over the hf:// filesystem.
+      3. Direct parquet footer read - fails for JSON-backed datasets.
+      4. Stream and count. Slow (~25 min for SwallowMath) but always correct.
     """
     # 1. datasets-server
     try:
@@ -94,14 +106,18 @@ def exact_doc_count(repo, config):
             url += f"&config={config}"
         r = requests.get(url, timeout=30)
         if r.ok:
-            size = r.json()["size"]
-            key = "config" if config else "dataset"
-            if key in size and size[key].get("num_rows"):
-                return int(size[key]["num_rows"])
-            if "dataset" in size and size["dataset"].get("num_rows"):
-                return int(size["dataset"]["num_rows"])
+            j = r.json()
+            partial = j.get("partial", False)
+            size = j["size"]
+            key = "config" if config and "config" in size else "dataset"
+            n = size.get(key, {}).get("num_rows")
+            if n and not partial:
+                return int(n)
+            if n and partial:
+                print(f"    [1/4] API says {int(n):,} but response is PARTIAL "
+                      f"(dataset >5GB) - ignoring, falling through")
     except Exception as e:
-        print(f"    [1/3] datasets-server failed: {e}")
+        print(f"    [1/4] datasets-server failed: {e}")
 
     # 2. builder metadata
     try:
@@ -110,8 +126,9 @@ def exact_doc_count(repo, config):
         splits = b.info.splits
         if splits and "train" in splits and splits["train"].num_examples:
             return int(splits["train"].num_examples)
+        print("    [2/4] builder has no split metadata")
     except Exception as e:
-        print(f"    [2/3] load_dataset_builder failed: {e}")
+        print(f"    [2/4] load_dataset_builder failed: {e}")
 
     # 3. parquet footers directly
     try:
@@ -119,17 +136,26 @@ def exact_doc_count(repo, config):
         from huggingface_hub import HfApi
         files = [f for f in HfApi().list_repo_files(repo, repo_type="dataset")
                  if f.endswith(".parquet")]
-        if not files:
-            print("    [3/3] no parquet files (dataset is likely JSON-backed)")
-            return None
-        fs = fsspec.filesystem("hf")
-        total = 0
-        for f in tqdm(files, desc="    parquet footers"):
-            with fs.open(f"datasets/{repo}/{f}") as fh:
-                total += pq.ParquetFile(fh).metadata.num_rows
-        return int(total)
+        if files:
+            fs = fsspec.filesystem("hf")
+            total = 0
+            for f in tqdm(files, desc="    parquet footers"):
+                with fs.open(f"datasets/{repo}/{f}") as fh:
+                    total += pq.ParquetFile(fh).metadata.num_rows
+            return int(total)
+        print("    [3/4] no parquet files (dataset is JSON-backed)")
     except Exception as e:
-        print(f"    [3/3] parquet footer read failed: {e}")
+        print(f"    [3/4] parquet footer read failed: {e}")
+
+    # 4. stream and count - slow but always correct
+    if not allow_stream:
+        return None
+    try:
+        print(f"    [4/4] streaming count for {repo} (~25 min, constant memory)")
+        ds = load_dataset(repo, config, split="train", streaming=True)
+        return sum(1 for _ in tqdm(ds, unit="doc", desc="    counting"))
+    except Exception as e:
+        print(f"    [4/4] streaming count failed: {e}")
 
     return None
 
@@ -251,7 +277,13 @@ def main():
     ap.add_argument("--decontam", action="store_true")
     ap.add_argument("--skip-counts", action="store_true",
                     help="skip GATE A (only if already answered - see notes/GATES.md)")
+    ap.add_argument("--gate-only", action="store_true",
+                    help="run GATE A document counts and nothing else")
+    ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
+
+    random.seed(a.seed)
+    np.random.seed(a.seed)
 
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     results = {}
@@ -285,11 +317,14 @@ def main():
                 print("\n  *** VERDICT: ~1:1, contrast is rewriting alone ***")
             print("\n  Record this in notes/GATES.md before continuing.")
         else:
-            print("\n  *** GATE A UNRESOLVED - count manually before proceeding. ***")
-            print("  Fallback:")
-            print("    from huggingface_hub import HfApi")
-            print("    import fsspec, pyarrow.parquet as pq")
-            print("    # see exact_doc_count() fallback 3 in this file")
+            print("\n  *** GATE A UNRESOLVED. ***")
+
+        (out / "gate_a.json").write_text(json.dumps(
+            {"counts": counts, "ratio": results.get("doc_count_ratio")}, indent=2))
+        print(f"  wrote {out/'gate_a.json'}")
+
+    if a.gate_only:
+        return
 
     # ---- distributional statistics ---------------------------------------
     for name, (repo, cfg) in [("finemath_4plus", FINEMATH), ("swallowmath", SWALLOWMATH)]:
