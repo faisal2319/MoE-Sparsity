@@ -171,7 +171,7 @@ def domain_expert_mi(model, tok, domain_texts, device="cuda", max_len=512):
 def probe_sets(n=300):
     math_ds = load_dataset("HuggingFaceTB/finemath", "finemath-4plus", split="train", streaming=True)
     web_ds = load_dataset("HuggingFaceFW/fineweb-edu", "sample-10BT", split="train", streaming=True)
-    code_ds = load_dataset("bigcode/the-stack-smol", "data/python", split="train", streaming=True)
+    code_ds = load_dataset("bigcode/the-stack-smol", split="train", streaming=True)
     take = lambda ds, key: [next(it)[key] for it in [iter(ds)] for _ in range(n)]
     it_m, it_w, it_c = iter(math_ds), iter(web_ds), iter(code_ds)
     return {
