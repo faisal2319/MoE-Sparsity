@@ -1,0 +1,110 @@
+
+==================================================================
+  MoE SPARSITY PILOT - STATUS
+==================================================================
+
+[ENVIRONMENT]
+  disk free      : 46G
+  hf cache       : 8.2M
+  torch          : 2.13.0+cu126  cuda=True
+  gpu            : NVIDIA GeForce RTX 4090
+  uncommitted    : 3 files
+
+==================================================================
+  PHASE A - data characterization
+==================================================================
+
+  GATE A - document counts
+    FineMath-4+   : 6,699,493
+    SwallowMath   : 6,497,564
+    ratio         : 0.9699
+    VERDICT       : no filtering confound; contrast = rewriting alone
+
+  measured (from 200k-doc samples per corpus)
+    metric                    finemath     swallow     ratio
+    words/doc                 874.5177    343.5242     0.393
+    chars/doc                5050.6518   1887.2197     0.374
+    type-token ratio            0.0351      0.0311     0.885
+    distinct-4gram              0.7527      0.7069     0.939
+    cos_mean                    0.1199      0.1178     0.983
+    cos_p90                     0.2627      0.2632     1.002
+    gsm8k contam rate          0.00002     0.00004
+
+  CONSISTENCY CHECK (documented token counts vs measured lengths)
+    tokens/doc finemath :     1433
+    tokens/doc swallow  :      354
+    implied token ratio :    0.247
+    measured word ratio :    0.393
+    tokens/word skew    :    1.590x
+    -> if skew is far from 1.0, either the two corpora tokenize
+       differently (plausible: LaTeX/markdown) or the published
+       9.6B / 2.3B figures use different tokenizers. UNVERIFIED.
+
+==================================================================
+  PHASE B - released checkpoint analysis
+==================================================================
+
+  6 models analyzed
+
+        E   total   taskloss   load_cv   norm_MI
+        8    320M     1.1254    0.2418    0.0657
+       16    520M     1.0541    0.3026    0.0868
+       32    920M     1.0327    0.3762    0.1144
+       64    1.7B     0.9736    0.4423    0.1375
+      128    3.3B     0.9123    0.5840    0.1715
+      256    6.6B     0.8825    0.7067    0.2026
+
+    task loss monotonically decreasing: True
+    GATE B: trend reproduces their TPP framework (all configs sit
+            at TPP >= 19, i.e. on the high side of their ~20 optimum)
+    STILL UNVERIFIED: absolute values vs their published numbers.
+      -> git clone https://github.com/rioyokotalab/optimal-sparsity
+      -> compare against taskloss-eval/README.md
+
+==================================================================
+  PHASE C - training pilot
+==================================================================
+    [ ] tokenizer            -> step03_train_tokenizer.py
+    [ ] data: finemath       -> step04_pack.py --condition finemath
+    [ ] data: swallowmath    -> step04_pack.py --condition swallowmath
+    [ ] benchmark            -> step06_benchmark.py
+
+    [ ] seed variance runs : 0/6   (GATE D)
+    [ ] sweep runs         : 0/18
+
+==================================================================
+  WHAT TO DO NEXT
+==================================================================
+
+  1. commit + push (instance is ephemeral)
+     $ git add -A && git commit -m "wip" && git push
+
+  2. GATE B: cross-check absolute task loss vs their published values
+     $ git clone https://github.com/rioyokotalab/optimal-sparsity /tmp/os && cat /tmp/os/taskloss-eval/README.md
+
+  3. train tokenizer
+     $ cd code && python step03_train_tokenizer.py --vocab-size 16000 --n-docs 500000
+
+==================================================================
+  VERIFIED vs INFERRED
+==================================================================
+
+  VERIFIED (measured directly):
+    - both document counts, and therefore the ratio
+    - all Phase A distributional statistics (200k-doc samples)
+    - all six Phase B task-loss / routing / MI values
+
+  INFERRED (assistant reasoning, NOT measured):
+    - "shortened to ~39% of original length" -> from word counts on samples,
+      not tokens on full corpora
+    - "token reduction fully explained by shortening" -> see consistency
+      check above; the numbers do not cleanly reconcile
+    - TPP values for the Phase B family -> depend on their 125B corpus size
+      being correct and on total-parameter counts from model names
+    - all cost and runtime estimates -> Gate C replaces these with measurements
+
+  UNVERIFIED (nobody has checked):
+    - whether the published 9.6B / 2.3B token figures use the same tokenizer
+    - whether Phase B absolute task-loss values match their published ones
+    - whether streaming enumerates every row of a dataset
+
