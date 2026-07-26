@@ -1,9 +1,10 @@
 {
   "doc_counts": {
     "finemath_4plus": 6699493,
-    "swallowmath": 2628785
+    "swallowmath": 6497564,
+    "_method": "exact streaming count; datasets-server returned a partial (5GB-truncated) 2628785"
   },
-  "doc_count_ratio": 0.3923856626165592,
+  "doc_count_ratio": 0.969859062469354,
   "finemath_4plus": {
     "n_docs": 200000,
     "chars_mean": 5050.651825,
