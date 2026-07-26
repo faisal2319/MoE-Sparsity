@@ -1,5 +1,3 @@
-# step04 (VAST)  - tokenize + pack both data conditions
-# --- paste contents here ---
 """
 Tokenize and pack a data condition into fixed-length sequences.
 
@@ -32,25 +30,60 @@ MATH_SOURCES = {
 WEB_SOURCE = ("HuggingFaceFW/fineweb-edu", "sample-10BT", "text")
 
 
-def pack_stream(repo, config, field, tok, target_tokens, seq_len, seed):
-    """Tokenize a stream, concatenate with EOS separators, chunk to seq_len."""
+def pack_stream(repo, config, field, tok, target_tokens, seq_len, seed, out_path):
+    """
+    Tokenize a stream, concatenate with EOS separators, chunk to seq_len,
+    writing INCREMENTALLY to a memmap on disk.
+
+    The obvious implementation - accumulate every chunk in a Python list, then
+    np.array(...) at the end - does not work at this scale. 1B tokens is
+    ~488k chunks of 2048 Python ints; the list-of-lists alone is several GB of
+    pointers before the int objects, and it OOMs or thrashes. Writing rows into
+    a preallocated memmap keeps memory flat regardless of corpus size.
+    """
     ds = load_dataset(repo, config, split="train", streaming=True)
     ds = ds.shuffle(seed=seed, buffer_size=10_000)
     eos = tok.eos_token_id
-    buf, chunks, n_tok = [], [], 0
-    pbar = tqdm(total=target_tokens, desc=f"{repo}", unit="tok")
+
+    max_chunks = target_tokens // seq_len + 16          # small slack
+    mm = np.lib.format.open_memmap(out_path, mode="w+",
+                                   dtype=np.uint16, shape=(max_chunks, seq_len))
+
+    buf = []
+    written = 0
+    n_tok = 0
+    pbar = tqdm(total=target_tokens, desc=f"{repo}", unit="tok", unit_scale=True)
     for ex in ds:
         ids = tok(ex[field], truncation=False)["input_ids"] + [eos]
         buf.extend(ids)
         n_tok += len(ids)
         pbar.update(len(ids))
-        while len(buf) >= seq_len:
-            chunks.append(buf[:seq_len])
-            buf = buf[seq_len:]
+
+        # drain buf into the memmap without repeated list slicing
+        n_full = len(buf) // seq_len
+        if n_full:
+            take = n_full * seq_len
+            block = np.asarray(buf[:take], dtype=np.uint16).reshape(n_full, seq_len)
+            end = min(written + n_full, max_chunks)
+            mm[written:end] = block[:end - written]
+            written = end
+            del buf[:take]
+            if written >= max_chunks:
+                break
         if n_tok >= target_tokens:
             break
     pbar.close()
-    return np.array(chunks, dtype=np.uint16)
+
+    mm.flush()
+    del mm
+
+    # truncate to what was actually written
+    full = np.load(out_path, mmap_mode="r")
+    real = np.array(full[:written])
+    del full
+    np.save(out_path, real)
+    print(f"  {out_path}: {written:,} sequences  ({written*seq_len/1e6:.1f}M tokens)")
+    return real
 
 
 def main():
@@ -72,7 +105,8 @@ def main():
     print(f"math={math_tokens/1e6:.0f}M  web={web_tokens/1e6:.0f}M")
 
     repo, cfg, field = MATH_SOURCES[a.condition]
-    math_chunks = pack_stream(repo, cfg, field, tok, math_tokens, a.seq_len, a.seed)
+    math_tmp = out / f"_tmp_math_{a.condition}.npy"
+    math_chunks = pack_stream(repo, cfg, field, tok, math_tokens, a.seq_len, a.seed, math_tmp)
 
     # Web half is shared - build once, reuse for both conditions.
     web_path = out / f"web_{web_tokens}_{a.seq_len}.npy"
@@ -80,10 +114,10 @@ def main():
         print(f"reusing {web_path}")
         web_chunks = np.load(web_path)
     else:
-        web_chunks = pack_stream(*WEB_SOURCE, tok, web_tokens, a.seq_len, a.seed)
-        np.save(web_path, web_chunks)
+        web_chunks = pack_stream(*WEB_SOURCE, tok, web_tokens, a.seq_len, a.seed, web_path)
 
     allc = np.concatenate([math_chunks, web_chunks])
+    del math_chunks, web_chunks
     rng = np.random.default_rng(a.seed)
     rng.shuffle(allc)
 
@@ -100,6 +134,7 @@ def main():
     }
     (out / f"{a.condition}_meta.json").write_text(json.dumps(meta, indent=2))
     print(json.dumps(meta, indent=2))
+    math_tmp.unlink(missing_ok=True)
     print(f"\nsaved -> {dest}")
     print("VERIFY: math_frac_actual and total_tokens must match across conditions.")
 
