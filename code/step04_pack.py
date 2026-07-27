@@ -116,6 +116,7 @@ def main():
     else:
         web_chunks = pack_stream(*WEB_SOURCE, tok, web_tokens, a.seq_len, a.seed, web_path)
 
+    n_math, n_web = math_chunks.shape[0], web_chunks.shape[0]
     allc = np.concatenate([math_chunks, web_chunks])
     del math_chunks, web_chunks
     rng = np.random.default_rng(a.seed)
@@ -127,8 +128,8 @@ def main():
         "condition": a.condition, "seq_len": a.seq_len,
         "n_sequences": int(allc.shape[0]),
         "total_tokens": int(allc.size),
-        "math_sequences": int(math_chunks.shape[0]),
-        "web_sequences": int(web_chunks.shape[0]),
+        "math_sequences": int(n_math),
+        "web_sequences": int(n_web),
         "math_frac_actual": float(math_chunks.shape[0] / allc.shape[0]),
         "vocab_size": len(tok),
     }
