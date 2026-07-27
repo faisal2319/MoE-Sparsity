@@ -130,7 +130,7 @@ def main():
         "total_tokens": int(allc.size),
         "math_sequences": int(n_math),
         "web_sequences": int(n_web),
-        "math_frac_actual": float(math_chunks.shape[0] / allc.shape[0]),
+        "math_frac_actual": float(n_math / allc.shape[0]),
         "vocab_size": len(tok),
     }
     (out / f"{a.condition}_meta.json").write_text(json.dumps(meta, indent=2))
