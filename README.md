@@ -1,6 +1,6 @@
 # MoE Sparsity × Data Quality Pilot
 
-> **Scope.** This is a small-scale methodological pilot at roughly 1/1000 the compute of Nakamura et al., *Optimal Sparsity of Mixture-of-Experts Language Models for Reasoning Tasks* (ICLR 2026 Oral, [arXiv:2508.18672](https://arxiv.org/abs/2508.18672)). It cannot establish a compute-optimal sparsity law. Its purpose is to test whether an interaction between mathematical pre-training data quality and MoE sparsity is detectable in a controlled, resource-constrained setting, and to characterise what the SwallowMath rewriting pipeline changed relative to its source corpus FineMath-4+.
+> **Scope.** This is a small-scale methodological pilot at roughly 1/1000 the compute of Nakamura et al., *Optimal Sparsity of Mixture-of-Experts Language Models for Reasoning Tasks* (ICLR 2026 Oral, [arXiv:2508.18672](https://arxiv.org/abs/2508.18672)). It cannot establish a compute-optimal sparsity law. Its purpose is threefold: to characterise what the SwallowMath rewriting pipeline changed relative to its source corpus FineMath-4+, to measure routing and specialization across the released sparsity range, and to establish whether the data-quality × sparsity interaction is detectable in a resource-constrained setting. **It is not.** The pilot's substantive contribution is locating the scale boundary below which the question cannot be asked.
 >
 > Total budget: 18 MoE models trained from scratch, 18 billion tokens, 16.8 GPU-hours, ~$6 on a single rented RTX 4090.
 
@@ -30,37 +30,50 @@ Paper A varies architecture and holds data fixed. Paper B varies data and holds 
 
 ![Sparsity vs held-out GSM8K task loss and pre-training loss, by data condition](code/out/phaseC/sparsity_curve.png)
 
-### 1. No detectable data × sparsity interaction
+### The question is not answerable at this scale — and this pilot establishes why
 
-The question asks whether data quality changes the *sparsity relationship*. It did not, at this scale. Testing whether the paired condition difference varies with expert count:
+Three findings, ordered by what they actually support.
+
+#### 1. No detectable interaction — but the test was not meaningful
+
+Testing whether the paired condition difference varies with expert count:
 
 | | F(2,6) | p |
 |---|---|---|
 | held-out GSM8K task loss | 0.405 | 0.684 |
 | pre-training loss | 0.253 | 0.784 |
 
-**No interaction is detectable.** The condition effect is statistically flat across E = 4, 16, 64. What follows are main effects, not interaction effects.
+This is weak evidence, for a structural reason rather than a statistical one. At 8.4M active parameters — roughly 20× below the smallest configuration in Nakamura et al. — the sparsity/task-loss relationship here is **monotonic**, exactly as their §3.3 predicts for the low-FLOPs regime. The inverted U has not emerged. **There is no curvature for data quality to modulate.** An interaction question presupposes a relationship that this scale does not exhibit.
 
-### 2. Rewritten data lowered pre-training loss without improving task loss
+#### 2. Held-out task loss: a bounded null
 
-The two metrics moved in opposite directions in all nine paired comparisons.
+| | value |
+|---|---|
+| pooled paired difference (n=9) | **+0.0507** |
+| t | +2.16 |
+| p | 0.063 |
+| 95% CI | [−0.0035, +0.1050] |
+| direction | SwallowMath worse in 9/9 pairs |
 
-| | pre-training loss | held-out GSM8K task loss |
-|---|---|---|
-| E=4 | −0.2373 | +0.0780 |
-| E=16 | −0.2844 | +0.0219 |
-| E=64 | −0.2601 | +0.0523 |
-| **pooled (n=9)** | **−0.2606** | **+0.0507** |
-| t | **−10.69** | +2.16 |
-| p | **0.00001** | 0.063 |
-| 95% CI | [−0.317, −0.204] | [−0.004, +0.105] |
-| consistent direction | 9/9 lower | 9/9 higher |
+Any downstream benefit from rewriting, at this scale, is bounded below ~0.1 task loss. The consistent sign is suggestive; the magnitude is not resolvable.
 
-SwallowMath is significantly *easier to model* and no better on the held-out task. Any downstream benefit at this scale is bounded below ~0.1 task loss.
+#### 3. Pre-training loss falls sharply — and this is close to expected
 
-This is a loss–capability divergence of the kind Paper A demonstrates by varying architecture, arrived at here by varying data. The Phase A measurements below are consistent with a mechanism — the rewriting pipeline measurably reduces surface-form diversity — though this pilot does not establish causation.
+| | value |
+|---|---|
+| pooled paired difference (n=9) | **−0.2606** |
+| t | −10.69 |
+| p | 0.00001 |
+| 95% CI | [−0.3168, −0.2044] |
+| direction | SwallowMath lower in 9/9 pairs |
 
----
+**This should not be read as a capability finding.** `final_lm_loss` is loss on the training distribution, and the two conditions are different text. Phase A measures SwallowMath as more homogeneous (distinct-4gram 0.707 vs 0.753), and more predictable text yields lower loss on itself. The result is close to tautological.
+
+Its value is methodological rather than scientific: it demonstrates concretely, with a large effect and tight confidence interval, that **pre-training loss cannot be compared across data conditions** — a comparison that appears routinely in data-quality work. Here it moves −0.26 while held-out task loss moves +0.05, in opposite directions, in every one of nine paired runs.
+
+#### What would be needed to answer the question
+
+**≥170M active parameters** — the smallest configuration in Nakamura et al., roughly 20× this pilot — so that the inverted-U regime exists and there is something for data quality to act on. A common held-out validation set spanning both conditions would also be required to separate distributional fit from capability.
 
 ## 1. Data characterization
 
@@ -258,8 +271,9 @@ MFU is low in absolute terms: d=256 matmuls are far too small to saturate a 4090
 4. **No document-level provenance.** SwallowMath exposes only a `text` field, so conditions are token- and distribution-matched, not source-matched.
 5. **Absolute task-loss values were not cross-checked** against the published numbers for the released checkpoints. Trends agree with their framework; absolute agreement is unverified.
 6. **Specialization and capacity are confounded** in the Phase B analysis.
-7. **The stated question is an interaction question, and no interaction was detected** (F(2,6) = 0.405, p = 0.684). With 3 seeds and 3 expert counts this design has low power to detect one; absence of evidence here is weak evidence of absence.
-8. **Published token counts use different tokenizers and must not be compared directly.** The SwallowMath card reports FineMath-4+ at 9.6B tokens; Nakamura et al. Table 1 reports the same corpus at 10.3B "as counted by the llm-jp tokenizer v3". Naively combining the published 9.6B and 2.3B figures with measured document counts implies ~1.03 tokens/word for SwallowMath, which is not achievable for English with any BPE tokenizer. All token counts in this pilot were measured with a single tokenizer applied to both conditions.
+7. **The stated question is an interaction question, and the design cannot test it.** No interaction was detected (F(2,6) = 0.405, p = 0.684), but at 8.4M active parameters the underlying sparsity/task-loss relationship is monotonic, so there is no curvature to modulate. Low statistical power compounds this. Absence of evidence here is close to no evidence either way.
+8. **`final_lm_loss` is not a capability measure across data conditions.** It is loss on the training distribution, and the conditions are different corpora. No common held-out validation set spanning both conditions was constructed; that would be required to separate distributional fit from capability.
+9. **Published token counts use different tokenizers and must not be compared directly.** The SwallowMath card reports FineMath-4+ at 9.6B tokens; Nakamura et al. Table 1 reports the same corpus at 10.3B "as counted by the llm-jp tokenizer v3". Naively combining the published 9.6B and 2.3B figures with measured document counts implies ~1.03 tokens/word for SwallowMath, which is not achievable for English with any BPE tokenizer. All token counts in this pilot were measured with a single tokenizer applied to both conditions.
 
 ---
 
