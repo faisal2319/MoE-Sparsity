@@ -1,0 +1,12 @@
+skipped (too long): 0
+
+THEIR METHOD  (per-example, then mean)
+  bits/token : 1.4509
+  bits/byte  : 0.5276
+  nats/token : 1.0057
+
+OUR METHOD  (all tokens pooled)
+  nats/token : 1.0043
+  bits/token : 1.4489
+
+macro vs micro ratio: 1.0013
