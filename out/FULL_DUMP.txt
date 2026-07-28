@@ -1,0 +1,411 @@
+############ 1. PHASE A ############
+{
+ "doc_counts": {
+  "finemath_4plus": 6699493,
+  "swallowmath": 6497564,
+  "_method": "exact streaming count; datasets-server returned a partial (5GB-truncated) 2628785"
+ },
+ "doc_count_ratio": 0.969859062469354,
+ "finemath_4plus": {
+  "n_docs": 200000,
+  "chars_mean": 5050.651825,
+  "chars_median": 2908.0,
+  "chars_p10": 879.0,
+  "chars_p90": 9837.100000000006,
+  "words_mean": 874.517655,
+  "words_median": 511.0,
+  "type_token_ratio": 0.0351022187196438,
+  "distinct_4gram_ratio": 0.7526618475873291,
+  "ngram_docs_sampled": 20000,
+  "structure": {
+   "step_header_doc_frac": 0.004545,
+   "md_header_doc_frac": 0.81956,
+   "bold_marker_doc_frac": 0.01486,
+   "numbered_list_doc_frac": 0.28119,
+   "latex_inline_doc_frac": 0.372075,
+   "latex_block_doc_frac": 0.17402,
+   "boxed_answer_doc_frac": 0.00703,
+   "final_answer_doc_frac": 0.056205
+  },
+  "topics": {
+   "algebra": 0.50897,
+   "geometry": 0.28564,
+   "calculus": 0.1912,
+   "probability": 0.123995,
+   "arithmetic": 0.45798,
+   "linalg": 0.12605
+  },
+  "_len_hist": [
+   3688,
+   10216,
+   11714,
+   12362,
+   13661,
+   14700,
+   14729,
+   12799,
+   11368,
+   10077,
+   8856,
+   8846,
+   6617,
+   5338,
+   4614,
+   4161,
+   3760,
+   3164,
+   2939,
+   2496,
+   2247,
+   2079,
+   1800,
+   1597,
+   1450,
+   1420,
+   1435,
+   1300,
+   1242,
+   1112,
+   1044,
+   938,
+   737,
+   672,
+   577,
+   554,
+   544,
+   514,
+   434,
+   476,
+   448,
+   483,
+   418,
+   382,
+   300,
+   305,
+   308,
+   302,
+   254,
+   268
+  ],
+  "homogeneity": {
+   "cos_mean": 0.11989115178585052,
+   "cos_std": 0.10952536016702652,
+   "cos_p50": 0.10922285914421082,
+   "cos_p90": 0.2626778781414032,
+   "cos_p99": 0.42489978671073914,
+   "_hist": [
+    29,
+    61,
+    182,
+    382,
+    830,
+    1526,
+    2662,
+    4132,
+    6065,
+    8367,
+    10641,
+    12853,
+    14511,
+    15158,
+    15450,
+    15191,
+    14369,
+    12957,
+    11862,
+    10161,
+    8743,
+    7243,
+    5841,
+    4869,
+    3665,
+    3071,
+    2236,
+    1660,
+    1282,
+    1022,
+    777,
+    564,
+    398,
+    286,
+    221,
+    138,
+    133,
+    88,
+    67,
+    56,
+    26,
+    25,
+    23,
+    17,
+    12,
+    12,
+    12,
+    9,
+    9,
+    7,
+    10,
+    8,
+    1,
+    2,
+    6,
+    0,
+    5,
+    1,
+    0,
+    0
+   ]
+  },
+  "decontamination": {
+   "gsm8k_contaminated_docs": 1,
+   "rate": 2e-05,
+   "n_gram": 13
+  }
+ },
+ "swallowmath": {
+  "n_docs": 200000,
+  "chars_mean": 1887.2197,
+  "chars_median": 1526.0,
+  "chars_p10": 614.0,
+  "chars_p90": 3083.0,
+  "words_mean": 343.524205,
+  "words_median": 272.0,
+  "type_token_ratio": 0.03106814554741492,
+  "distinct_4gram_ratio": 0.7068675589051908,
+  "ngram_docs_sampled": 20000,
+  "structure": {
+   "step_header_doc_frac": 0.12261,
+   "md_header_doc_frac": 0.43443,
+   "bold_marker_doc_frac": 0.239215,
+   "numbered_list_doc_frac": 0.358815,
+   "latex_inline_doc_frac": 0.242385,
+   "latex_block_doc_frac": 0.057145,
+   "boxed_answer_doc_frac": 0.08324,
+   "final_answer_doc_frac": 0.13256
+  },
+  "topics": {
+   "algebra": 0.459725,
+   "geometry": 0.200315,
+   "calculus": 0.12705,
+   "probability": 0.09328,
+   "arithmetic": 0.409295,
+   "linalg": 0.08028
+  },
+  "_len_hist": [
+   3876,
+   16798,
+   26586,
+   33927,
+   33617,
+   26811,
+   18353,
+   11403,
+   7372,
+   4842,
+   3315,
+   2345,
+   1729,
+   1244,
+   1000,
+   705,
+   614,
+   542,
+   498,
+   375,
+   463,
+   407,
+   361,
+   310,
+   219,
+   204,
+   153,
+   107,
+   107,
+   89,
+   73,
+   54,
+   60,
+   55,
+   47,
+   43,
+   46,
+   31,
+   35,
+   27,
+   35,
+   20,
+   29,
+   19,
+   14,
+   15,
+   13,
+   24,
+   14,
+   10
+  ],
+  "homogeneity": {
+   "cos_mean": 0.1178053617477417,
+   "cos_std": 0.11120162159204483,
+   "cos_p50": 0.1062481552362442,
+   "cos_p90": 0.2631824016571045,
+   "cos_p99": 0.43172070384025574,
+   "_hist": [
+    33,
+    90,
+    209,
+    424,
+    955,
+    1661,
+    2866,
+    4424,
+    6543,
+    8798,
+    10889,
+    13113,
+    14412,
+    15440,
+    15493,
+    14812,
+    13913,
+    12762,
+    11401,
+    9958,
+    8341,
+    6869,
+    5714,
+    4626,
+    3720,
+    2866,
+    2337,
+    1712,
+    1354,
+    1062,
+    804,
+    560,
+    448,
+    303,
+    250,
+    194,
+    143,
+    98,
+    93,
+    70,
+    42,
+    28,
+    18,
+    16,
+    14,
+    13,
+    12,
+    7,
+    9,
+    6,
+    5,
+    3,
+    1,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "decontamination": {
+   "gsm8k_contaminated_docs": 2,
+   "rate": 4e-05,
+   "n_gram": 13
+  }
+ }
+}
+
+############ 2. PHASE B ############
+llm-jp/optimal-sparsity-math-d512-E8-k2-320M-A170M
+  taskloss 1.1254
+  load_cv  0.2418
+  norm_MI  0.0657
+  cfg      {'hidden_size': 512, 'num_hidden_layers': 16, 'num_local_experts': 8, 'num_experts_per_tok': 2, 'total_params': 320160256}
+llm-jp/optimal-sparsity-math-d512-E16-k2-520M-A170M
+  taskloss 1.0541
+  load_cv  0.3026
+  norm_MI  0.0868
+  cfg      {'hidden_size': 512, 'num_hidden_layers': 16, 'num_local_experts': 16, 'num_experts_per_tok': 2, 'total_params': 521552384}
+llm-jp/optimal-sparsity-math-d512-E32-k2-920M-A170M
+  taskloss 1.0327
+  load_cv  0.3762
+  norm_MI  0.1144
+  cfg      {'hidden_size': 512, 'num_hidden_layers': 16, 'num_local_experts': 32, 'num_experts_per_tok': 2, 'total_params': 924336640}
+llm-jp/optimal-sparsity-math-d512-E64-k2-1.7B-A170M
+  taskloss 0.9736
+  load_cv  0.4423
+  norm_MI  0.1375
+  cfg      {'hidden_size': 512, 'num_hidden_layers': 16, 'num_local_experts': 64, 'num_experts_per_tok': 2, 'total_params': 1729905152}
+llm-jp/optimal-sparsity-math-d512-E128-k2-3.3B-A170M
+  taskloss 0.9123
+  load_cv  0.584
+  norm_MI  0.1715
+  cfg      {'hidden_size': 512, 'num_hidden_layers': 16, 'num_local_experts': 128, 'num_experts_per_tok': 2, 'total_params': 3341042176}
+llm-jp/optimal-sparsity-math-d512-E256-k2-6.6B-A170M
+  taskloss 0.8825
+  load_cv  0.7067
+  norm_MI  0.2026
+  cfg      {'hidden_size': 512, 'num_hidden_layers': 16, 'num_local_experts': 256, 'num_experts_per_tok': 2, 'total_params': 6563316224}
+
+############ 3. ALL 18 RUNS ############
+cat: out/phaseC/all_runs.json: No such file or directory
+
+############ 4. BENCHMARK ############
+MISSING
+
+############ 5. ONE FULL RUN SUMMARY ############
+cat: runs/E16_swallowmath_s0/summary.json: No such file or directory
+
+############ 6. DATA META ############
+cat: data/finemath_meta.json: No such file or directory
+cat: data/swallowmath_meta.json: No such file or directory
+
+############ 7. ROUTER COLLAPSE ############
+notes/seeds.log:6
+notes/sweep.log:7
+
+############ 8. WALL CLOCK ############
+0.00 GPU-hours across 0 runs
+
+############ 9. GATES ############
+# Gate answers
+
+Fill in as you clear each one. These decide what goes in the README and the LOI.
+
+## Gate A - document counts (step01, LOCAL, $0)
+- FineMath-4+ documents:
+- SwallowMath documents:
+- Ratio:
+- Filtering confound? (ratio < 0.95 = YES):
+- Row-for-row ordering preserved?:
+- => LOI wording: "source-matched" / "token-and-distribution-matched" only
+
+## Gate B - harness validation (step02, VAST)
+- My GSM8K task loss, E=8:
+- Their published value:
+- Match?:
+- If no, what was wrong:
+
+## Gate C - budget (step06, VAST)
+- tokens/sec at E=4 / E=16 / E=64:
+- MFU (active FLOPs):
+- Peak VRAM:
+- Hours per run:
+- Token budget chosen (500M or 1B):
+
+## Gate D - noise floor (step11, VAST)
+- Max seed range:
+- Expected effect size:
+- Resolvable? If NO -> STOP, write it up, that is the result:
+
+## Pre-registered prediction (before sweep, 2026-07-27)
+TPP at 1B tokens: E=4 -> 68, E=16 -> 19, E=64 -> 4.9
+Nakamura et al. report reasoning peaks near TPP ~= 20.
+Measured so far (finemath): E=4 = 4.133, E=64 = 3.921
+PREDICTION: E=16 beats both, task loss < 3.92.
+Minimum detectable effect with 3 seeds: ~0.12 task loss.
