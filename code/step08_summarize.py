@@ -152,7 +152,7 @@ def plot(runs, out="out/phaseC"):
     for cond, d in sorted(by.items()):
         xs = sorted(d)
         ys = [np.mean(d[x]) for x in xs]
-        es = [np.std(d[x]) for x in xs]
+        es = [np.std(d[x], ddof=1) for x in xs]
         ax.errorbar(xs, ys, yerr=es, marker="o", capsize=4, label=cond, lw=1.6)
     ax.set_xscale("log", base=2)
     ax.set_xticks(sorted({e for d in by.values() for e in d}))
