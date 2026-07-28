@@ -1,0 +1,34 @@
+[
+  {
+    "model": "llm-jp/optimal-sparsity-math-d512-E8-k2-320M-A170M",
+    "n_experts": 8,
+    "n_layers": 16,
+    "n_probe_per_domain": 100,
+    "n_permutations": 20,
+    "cells_per_layer": 24,
+    "observed_mi_nats": 0.07221423755487628,
+    "shuffled_mi_mean": 0.0007222113999863558,
+    "shuffled_mi_std": 0.00028020149410958706,
+    "corrected_mi_nats": 0.07149202615488993,
+    "z_vs_null": 255.14505688870216,
+    "observed_normalized": 0.0657322317433973,
+    "corrected_normalized": 0.06507484659721265,
+    "bias_fraction_of_observed": 0.01000095582865554
+  },
+  {
+    "model": "llm-jp/optimal-sparsity-math-d512-E256-k2-6.6B-A170M",
+    "n_experts": 256,
+    "n_layers": 16,
+    "n_probe_per_domain": 100,
+    "n_permutations": 20,
+    "cells_per_layer": 768,
+    "observed_mi_nats": 0.22259695227913495,
+    "shuffled_mi_mean": 0.009602603117898602,
+    "shuffled_mi_std": 0.0011139633797824246,
+    "corrected_mi_nats": 0.21299434916123636,
+    "z_vs_null": 191.20408536485073,
+    "observed_normalized": 0.20261647769205082,
+    "corrected_normalized": 0.19387581165641032,
+    "bias_fraction_of_observed": 0.04313896942244298
+  }
+]
