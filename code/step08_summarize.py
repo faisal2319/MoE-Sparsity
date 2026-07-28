@@ -138,32 +138,50 @@ def report_spread(runs, out_dir=None):
 
 def plot(runs, out="out/phaseC"):
     import matplotlib.pyplot as plt
-    runs = [r for r in runs if TASK in r]
+    runs = [r for r in runs if TASK in r and PRETRAIN in r]
     if not runs:
-        print("No task-loss values - run with --taskloss first. Skipping plot.")
+        print("Task or pre-training loss missing. Skipping plot.")
         return
     Path(out).mkdir(parents=True, exist_ok=True)
 
-    by = defaultdict(lambda: defaultdict(list))
-    for r in runs:
-        by[r["condition"]][r["experts"]].append(r[TASK])
+    labels = {"finemath": "FineMath-4+", "swallowmath": "SwallowMath"}
+    colors = {"finemath": "#31688e", "swallowmath": "#d1495b"}
+    metrics = [(PRETRAIN, "Pre-training loss"),
+               (TASK, "GSM8K task loss")]
+    experts = sorted({r["experts"] for r in runs})
 
-    fig, ax = plt.subplots(figsize=(6.5, 4.2))
-    for cond, d in sorted(by.items()):
-        xs = sorted(d)
-        ys = [np.mean(d[x]) for x in xs]
-        es = [np.std(d[x], ddof=1) for x in xs]
-        ax.errorbar(xs, ys, yerr=es, marker="o", capsize=4, label=cond, lw=1.6)
-    ax.set_xscale("log", base=2)
-    ax.set_xticks(sorted({e for d in by.values() for e in d}))
-    ax.get_xaxis().set_major_formatter(plt.ScalarFormatter())
-    ax.set_xlabel("number of experts (E), k=2, active params held constant")
-    ax.set_ylabel("GSM8K task loss")
-    ax.set_title("Sparsity vs reasoning task loss, by data condition\n"
-                 "pilot at ~1/1000 the compute of Nakamura et al. (ICLR 2026)",
-                 fontsize=9)
-    ax.legend(); ax.grid(alpha=0.3)
-    fig.tight_layout()
+    fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.3))
+    for ax, (metric, title) in zip(axes, metrics):
+        by = defaultdict(lambda: defaultdict(list))
+        for r in runs:
+            by[r["condition"]][r["experts"]].append(r[metric])
+        for cond, d in sorted(by.items()):
+            xs = sorted(d)
+            ys = [np.mean(d[x]) for x in xs]
+            es = [np.std(d[x], ddof=1) for x in xs]
+            ax.errorbar(
+                xs, ys, yerr=es, marker="o", markersize=5, capsize=4,
+                label=labels.get(cond, cond), color=colors.get(cond), lw=1.8
+            )
+        ax.set_xscale("log", base=2)
+        ax.set_xticks(experts)
+        ax.get_xaxis().set_major_formatter(plt.ScalarFormatter())
+        ax.set_xlabel("number of experts (E), k=2")
+        ax.set_ylabel(title)
+        ax.set_title(title, fontsize=11, weight="bold")
+        ax.grid(alpha=0.25)
+
+    axes[0].legend(frameon=False, loc="best")
+    fig.suptitle(
+        "Rewritten data lowers pre-training loss without lowering task loss",
+        fontsize=13, weight="bold"
+    )
+    fig.text(
+        0.5, 0.01,
+        "Mean ± seed SD (n=3); active parameters held approximately constant; lower is better",
+        ha="center", fontsize=8.5, color="#444444"
+    )
+    fig.tight_layout(rect=(0, 0.05, 1, 0.93))
     fig.savefig(f"{out}/sparsity_curve.png", dpi=160)
     print(f"wrote {out}/sparsity_curve.png")
 

@@ -7,6 +7,6 @@
     -0.0035,
     0.105
   ],
-  "direction": "swallowmath worse in 9/9 pairs",
-  "sign_test_p": 0.004
+  "direction": "swallowmath worse in 7/9 pairs",
+  "sign_test_p": 0.1797
 }
