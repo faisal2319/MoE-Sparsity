@@ -27,3 +27,10 @@ Fill in as you clear each one. These decide what goes in the README and the LOI.
 - Max seed range:
 - Expected effect size:
 - Resolvable? If NO -> STOP, write it up, that is the result:
+
+## Pre-registered prediction (before sweep, 2026-07-27)
+TPP at 1B tokens: E=4 -> 68, E=16 -> 19, E=64 -> 4.9
+Nakamura et al. report reasoning peaks near TPP ~= 20.
+Measured so far (finemath): E=4 = 4.133, E=64 = 3.921
+PREDICTION: E=16 beats both, task loss < 3.92.
+Minimum detectable effect with 3 seeds: ~0.12 task loss.

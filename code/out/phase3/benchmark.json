@@ -1,0 +1,43 @@
+{
+  "per_config": [
+    {
+      "n_experts": 4,
+      "tokens_per_sec": 345132.17567986785,
+      "sec_per_step": 0.7595466852188111,
+      "mfu": 0.10538203100904417,
+      "peak_vram_gb": 11.912201728,
+      "active_nonembed": 8396800,
+      "total_nonembed": 14688256,
+      "embedding": 4096000,
+      "total_all": 18788608,
+      "sparsity_ratio": 1.7492682926829268
+    },
+    {
+      "n_experts": 16,
+      "tokens_per_sec": 331038.77598058624,
+      "sec_per_step": 0.7918830633163452,
+      "mfu": 0.1013746182949922,
+      "peak_vram_gb": 12.239750656,
+      "active_nonembed": 8421376,
+      "total_nonembed": 52461568,
+      "embedding": 4096000,
+      "total_all": 56561920,
+      "sparsity_ratio": 6.229571984435798
+    },
+    {
+      "n_experts": 64,
+      "tokens_per_sec": 270416.41468468326,
+      "sec_per_step": 0.9694086074829101,
+      "mfu": 0.08377677526766554,
+      "peak_vram_gb": 13.548963328,
+      "active_nonembed": 8519680,
+      "total_nonembed": 203554816,
+      "embedding": 4096000,
+      "total_all": 207655168,
+      "sparsity_ratio": 23.892307692307693
+    }
+  ],
+  "mean_hours_per_run": 0.890392146646735,
+  "n_runs": 24,
+  "total_gpu_hours": 21.36941151952164
+}

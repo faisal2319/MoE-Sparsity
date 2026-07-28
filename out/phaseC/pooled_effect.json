@@ -1,0 +1,12 @@
+{
+  "pooled_n": 9,
+  "mean_diff": 0.0507,
+  "t": 2.16,
+  "p": 0.063,
+  "ci95": [
+    -0.0035,
+    0.105
+  ],
+  "direction": "swallowmath worse in 9/9 pairs",
+  "sign_test_p": 0.004
+}

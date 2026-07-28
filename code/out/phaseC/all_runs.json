@@ -1,0 +1,128 @@
+[
+  {
+    "experts": 16,
+    "condition": "finemath",
+    "seed": 0,
+    "gsm8k_task_loss": 4.051844376416701,
+    "final_lm_loss": 3.746015280485153
+  },
+  {
+    "experts": 16,
+    "condition": "finemath",
+    "seed": 1,
+    "gsm8k_task_loss": 4.084157312693675,
+    "final_lm_loss": 3.772560626268387
+  },
+  {
+    "experts": 16,
+    "condition": "finemath",
+    "seed": 2,
+    "gsm8k_task_loss": 4.118524051137614,
+    "final_lm_loss": 3.818365901708603
+  },
+  {
+    "experts": 16,
+    "condition": "swallowmath",
+    "seed": 0,
+    "gsm8k_task_loss": 4.093842720713906,
+    "final_lm_loss": 3.4744542837142944
+  },
+  {
+    "experts": 16,
+    "condition": "swallowmath",
+    "seed": 1,
+    "gsm8k_task_loss": 4.151483112690542,
+    "final_lm_loss": 3.5531393587589264
+  },
+  {
+    "experts": 16,
+    "condition": "swallowmath",
+    "seed": 2,
+    "gsm8k_task_loss": 4.074874332983765,
+    "final_lm_loss": 3.4560229778289795
+  },
+  {
+    "experts": 4,
+    "condition": "finemath",
+    "seed": 0,
+    "gsm8k_task_loss": 4.142117809452815,
+    "final_lm_loss": 3.8604950606822968
+  },
+  {
+    "experts": 4,
+    "condition": "finemath",
+    "seed": 1,
+    "gsm8k_task_loss": 4.070097637557476,
+    "final_lm_loss": 3.8544223308563232
+  },
+  {
+    "experts": 4,
+    "condition": "finemath",
+    "seed": 2,
+    "gsm8k_task_loss": 4.185379632248973,
+    "final_lm_loss": 3.913953512907028
+  },
+  {
+    "experts": 4,
+    "condition": "swallowmath",
+    "seed": 0,
+    "gsm8k_task_loss": 4.325240949370736,
+    "final_lm_loss": 3.657336086034775
+  },
+  {
+    "experts": 4,
+    "condition": "swallowmath",
+    "seed": 1,
+    "gsm8k_task_loss": 4.167357419839565,
+    "final_lm_loss": 3.6900731027126312
+  },
+  {
+    "experts": 4,
+    "condition": "swallowmath",
+    "seed": 2,
+    "gsm8k_task_loss": 4.139058637858778,
+    "final_lm_loss": 3.5694597363471985
+  },
+  {
+    "experts": 64,
+    "condition": "finemath",
+    "seed": 0,
+    "gsm8k_task_loss": 3.9503703179253202,
+    "final_lm_loss": 3.6018214225769043
+  },
+  {
+    "experts": 64,
+    "condition": "finemath",
+    "seed": 1,
+    "gsm8k_task_loss": 3.885479438351574,
+    "final_lm_loss": 3.5975964665412903
+  },
+  {
+    "experts": 64,
+    "condition": "finemath",
+    "seed": 2,
+    "gsm8k_task_loss": 3.9279249843164745,
+    "final_lm_loss": 3.652080863714218
+  },
+  {
+    "experts": 64,
+    "condition": "swallowmath",
+    "seed": 0,
+    "gsm8k_task_loss": 3.971741219688173,
+    "final_lm_loss": 3.339500844478607
+  },
+  {
+    "experts": 64,
+    "condition": "swallowmath",
+    "seed": 1,
+    "gsm8k_task_loss": 3.9529275242739352,
+    "final_lm_loss": 3.412767171859741
+  },
+  {
+    "experts": 64,
+    "condition": "swallowmath",
+    "seed": 2,
+    "gsm8k_task_loss": 3.9960541132962137,
+    "final_lm_loss": 3.318925052881241
+  }
+]

@@ -93,7 +93,7 @@ def main():
     ap.add_argument("--math-frac", type=float, default=0.25)
     ap.add_argument("--seq-len", type=int, default=2048)
     ap.add_argument("--tokenizer", type=str, default="artifacts/tokenizer")
-    ap.add_argument("--out", type=str, default="data")
+    ap.add_argument("--out", type=str, default=str(Path(__file__).resolve().parents[1] / "data"))
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
 
